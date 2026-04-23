@@ -2,6 +2,7 @@ import { NUMBER_OF_SALT_ROUNDS } from "../constants/auth";
 import { UserAuthRequest, UserLoginRequest } from "../interfaces/user"
 import UserModel from "../models/UserModel";
 import bcrypt from "bcrypt";
+import { generateAccessToken, generateRefreshToken } from "../utils/auth";
 
 
 export const register = async (data: UserAuthRequest) => {
@@ -31,8 +32,13 @@ export const login = async (data: UserLoginRequest ) => {
         throw new Error("Password is invalid");
 
     }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
         
     return { 
+        accessToken,
+        refreshToken,
         user: {
             id: user._id,
             name: user.name,
