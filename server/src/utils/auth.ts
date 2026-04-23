@@ -20,7 +20,7 @@ export const generateRefreshToken = ( user: IUser) => {
             userId: user._id,
             email: user.email
         },
-        config.JWT_SECRET,{
+        config.JWT_REFRESH_SECRET,{
             expiresIn: "30d"
         }
     )

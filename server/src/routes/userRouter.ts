@@ -12,7 +12,7 @@ router.get('/me', authenticate, (req: UserRequest, res) => {
 
 });
 
-router.get("/", userController.getAll);
+router.get("/", authenticate, userController.getAll);
 
 
 export default router;
