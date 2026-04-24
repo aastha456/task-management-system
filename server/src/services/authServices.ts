@@ -3,6 +3,8 @@ import { UserAuthRequest, UserLoginRequest } from "../interfaces/user"
 import UserModel from "../models/UserModel";
 import bcrypt from "bcrypt";
 import { generateAccessToken, generateRefreshToken } from "../utils/auth";
+import jwt from "jsonwebtoken";
+import SessionModel from "../models/SessionModel";
 
 
 export const register = async (data: UserAuthRequest) => {
@@ -35,6 +37,15 @@ export const login = async (data: UserLoginRequest ) => {
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
+
+    const decoded = jwt.decode(refreshToken) as { exp: number };
+    const expiresAt = new Date(decoded.exp * 1000);
+
+    await SessionModel.create({
+        userId: user._id,
+        refreshToken,
+        expiresAt
+    })
         
     return { 
         accessToken,
