@@ -9,7 +9,7 @@ export const generateAccessToken = (user: IUser) => {
             email: user.email
         },
         config.JWT_SECRET,{
-            expiresIn: "30m"
+            expiresIn: "1d"
         }
     )
 }

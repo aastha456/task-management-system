@@ -13,6 +13,9 @@ router.get('/me', authenticate, (req: UserRequest, res) => {
 });
 
 router.get("/", authenticate, userController.getAll);
+router.get("/:id", authenticate, userController.getById);
+router.put("/:id", authenticate, userController.update);
+router.delete("/:id", authenticate, userController.remove);
 
 
 export default router;

@@ -15,8 +15,7 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 
-app.use("/api", router);
-app.use(errorHandler);
+
 
 app.listen(config.PORT, () => {
     console.log(`\nServer is running on port ${config.PORT} \n`)
@@ -26,5 +25,10 @@ app.listen(config.PORT, () => {
 app.get("/", (req, res) => {
   res.send("API running...");
 });
+
+app.use("/api", router);
+
+app.use(errorHandler);
+
 
 

@@ -35,34 +35,34 @@ export const login = async (
 
 }
 
-// export const logout = async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-// ) => {
-//     try{
-//         const { refreshToken } = req.body;
-//         await authServices.logout(refreshToken);
-//         return successResponse(res, { message: "Logged out successfully"});
+export const logout = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try{
+        const { refreshToken } = req.body;
+        await authServices.logout(refreshToken);
+        return successResponse(res, { message: "Logged out successfully"});
 
-//     }catch(error){
-//         next(error)
-//     }
-// }
+    }catch(error){
+        next(error)
+    }
+}
 
-// export const refreshToken = async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-// ) => {
-//     try {
-//         const { refreshToken } = req.body;
-//         const response = await authServices.generateAccessTokenBasedOnRefreshToken(refreshToken);
-//         return successResponse(res, { data: response})
+export const refreshToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { refreshToken } = req.body;
+        const response = await authServices.generateAccessTokenBasedOnRefreshToken(refreshToken);
+        return successResponse(res, { data: response})
 
-//     }
-//     catch(error) {
-//         next(error)
+    }
+    catch(error) {
+        next(error)
 
-//     }
-// }
+    }
+}

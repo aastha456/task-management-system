@@ -58,3 +58,27 @@ export const login = async (data: UserLoginRequest ) => {
     }
     
 }
+
+export const logout = async (refreshToken: string) => {
+    await SessionModel.findOneAndDelete({ refreshToken });
+}
+
+export const generateAccessTokenBasedOnRefreshToken = async (refreshToken: string) => {
+    const session = await SessionModel.findOne({refreshToken});
+    if(!session){
+        throw new Error("Invalid refresh token");
+    }
+
+    if(session.expiresAt < new Date()){
+        await SessionModel.findByIdAndDelete(session._id);
+        throw new Error("Refresh token has expired. Please log in again.");
+    }
+
+    const user = await UserModel.findById(session.userId);
+    if(!user){
+        throw new Error("User not found");
+    }
+    
+    const accessToken = generateAccessToken(user);
+    return { accessToken };
+}
