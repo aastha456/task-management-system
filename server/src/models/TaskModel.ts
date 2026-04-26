@@ -8,6 +8,7 @@ export interface ITask extends Document {
   dueDate?: Date;
   assignedTo?: Types.ObjectId; // Reference to User
   projectId: Types.ObjectId; // Reference to Project
+  workspaceId: Types.ObjectId; // Reference to Workspace
   createdBy: Types.ObjectId; // Reference to User
 }
 
@@ -41,6 +42,11 @@ const TaskSchema: Schema = new Schema<ITask>(
             type: Schema.Types.ObjectId, 
             ref: 'Project', 
             required: false
+        },
+        workspaceId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Workspace',
+            required: true
         },
         createdBy: { 
             type: Schema.Types.ObjectId, 
