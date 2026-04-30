@@ -2,12 +2,12 @@ import { Router } from "express";
 import * as projectController from "../controllers/projectController";
 import { authenticate } from "../middlewares/authenticate"; 
 
-const roouter = Router();
+const router = Router();
 
-roouter.post("/", authenticate, projectController.createProject);
-roouter.get("/", authenticate, projectController.getAllProject);
-roouter.get("/:id", authenticate, projectController.getProjectById);
-roouter.put("/:id", authenticate, projectController.updateProject);
-roouter.delete("/:id", authenticate, projectController.deleteProject);
+router.post("/", authenticate, projectController.createProject);
+router.get("/", authenticate, projectController.getAllProject);
+router.get("/:id", authenticate, projectController.getProjectById);
+router.put("/:id", authenticate, projectController.updateProject);
+router.delete("/:id", authenticate, projectController.deleteProject);
 
-export default roouter;
+export default router;
