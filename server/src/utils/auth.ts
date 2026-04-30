@@ -6,7 +6,8 @@ export const generateAccessToken = (user: IUser) => {
     return jwt.sign(
         {
             userId: user._id,
-            email: user.email
+            email: user.email,
+            role: user.role
         },
         config.JWT_SECRET,{
             expiresIn: "1d"
