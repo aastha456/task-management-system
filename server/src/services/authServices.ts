@@ -9,7 +9,7 @@ import SessionModel from "../models/SessionModel";
 
 export const register = async (data: UserAuthRequest) => {
 
-    const { name, email, password } = data;
+    const { name, email, password, role } = data;
     const existingUser = await UserModel.findOne({ email });
     if(existingUser){
         throw new Error("User already exists")
@@ -17,7 +17,7 @@ export const register = async (data: UserAuthRequest) => {
 
     const hashedPassword = await bcrypt.hash(password, NUMBER_OF_SALT_ROUNDS)
 
-    return await UserModel.create({ name, email, password: hashedPassword});
+    return await UserModel.create({ name, email, password: hashedPassword, role: role || "user"});
  
 
 }
