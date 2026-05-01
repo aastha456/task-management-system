@@ -12,6 +12,8 @@ import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import { loginUser } from "../../store/slices/authSlice";
 import { loginSchema } from "../../schemas/auth";
 import { z } from "zod";
+import { COLORS } from "../../constants/theme";
+import { toast } from "react-toastify";
 
 export type LoginForm = z.infer<typeof loginSchema>;
 
@@ -26,16 +28,22 @@ const Login = () => {
     });
 
     const onSubmit = async (data: LoginForm) => {
-        const result = await dispatch(loginUser(data));
-        if (loginUser.fulfilled.match(result)) {
-            const role = result.payload.role;
+    const result = await dispatch(loginUser(data));
+
+    if (loginUser.fulfilled.match(result)) {
+        toast.success("Login successful");
+
+        const role = result.payload.role;
+
+        setTimeout(() => {
             if (role === "admin") {
                 navigate("/admin");
             } else {
                 navigate("/dashboard");
             }
-        }
-    };
+        }, 800);
+    }
+};
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh" }}>
@@ -47,26 +55,26 @@ const Login = () => {
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "flex-start",
-                bgcolor: "#1D9E75",
+                bgcolor: COLORS.primary,
                 p: 6,
             }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4 }}>
                     <Box sx={{
                         width: 36, height: 36, borderRadius: 2,
-                        bgcolor: "rgba(255,255,255,0.2)",
+                        bgcolor: "rgba(255,255,255,0.12)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}>
-                        <Typography sx={{ color: "#E1F5EE", fontSize: 18 }}>✓</Typography>
+                        <Typography sx={{ color: COLORS.primaryText, fontSize: 18 }}>✓</Typography>
                     </Box>
-                    <Typography sx={{ fontSize: 20, fontWeight: 500, color: "#E1F5EE" }}>
+                    <Typography sx={{ fontSize: 20, fontWeight: 500, color: COLORS.primaryText }}>
                         FlowTask
                     </Typography>
                 </Box>
 
-                <Typography sx={{ fontSize: 26, fontWeight: 500, color: "#E1F5EE", lineHeight: 1.3, mb: 1 }}>
+                <Typography sx={{ fontSize: 26, fontWeight: 500, color: COLORS.primaryText, lineHeight: 1.3, mb: 1 }}>
                     Manage tasks,<br />not complexity
                 </Typography>
-                <Typography sx={{ fontSize: 13, color: "#9FE1CB", lineHeight: 1.7, mb: 4, maxWidth: 280 }}>
+                <Typography sx={{ fontSize: 13, color: COLORS.primaryMuted, lineHeight: 1.7, mb: 4, maxWidth: 280 }}>
                     A clean workspace for teams to plan, track, and ship work — without the clutter.
                 </Typography>
 
@@ -81,10 +89,10 @@ const Login = () => {
                             border: "0.5px solid rgba(255,255,255,0.15)",
                             borderRadius: 2, p: 2
                         }}>
-                            <Typography sx={{ fontSize: 13, fontWeight: 500, color: "#E1F5EE", mb: 0.5 }}>
+                            <Typography sx={{ fontSize: 13, fontWeight: 500, color: COLORS.primaryText, mb: 0.5 }}>
                                 {f.title}
                             </Typography>
-                            <Typography sx={{ fontSize: 12, color: "#9FE1CB" }}>
+                            <Typography sx={{ fontSize: 12, color: COLORS.primaryMuted }}>
                                 {f.desc}
                             </Typography>
                         </Box>
@@ -165,8 +173,8 @@ const Login = () => {
                             fullWidth
                             disabled={loading}
                             sx={{
-                                bgcolor: "#1D9E75",
-                                "&:hover": { bgcolor: "#0F6E56" },
+                                bgcolor: COLORS.primary,
+                                "&:hover": { bgcolor: COLORS.primaryDark },
                                 textTransform: "none",
                                 fontWeight: 500,
                                 height: 40,
@@ -185,7 +193,7 @@ const Login = () => {
                         No account?{" "}
                         <Link
                             to="/register"
-                            style={{ color: "#1D9E75", fontWeight: 500, textDecoration: "none" }}
+                            style={{ color: COLORS.primary, fontWeight: 500, textDecoration: "none" }}
                         >
                             Register here
                         </Link>
