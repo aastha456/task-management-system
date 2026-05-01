@@ -8,34 +8,39 @@ import { useState } from 'react';
 import { useNavigate, Link } from "react-router";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
-import { registerUser } from "../store/slices/authSlice";
-import { registerSchema } from "../schemas/auth";
+import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
+import { loginUser } from "../../store/slices/authSlice";
+import { loginSchema } from "../../schemas/auth";
 import { z } from "zod";
 
-export type RegisterForm = z.infer<typeof registerSchema>;
+export type LoginForm = z.infer<typeof loginSchema>;
 
-const Register = () => {
+const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { loading, error } = useAppSelector((state) => state.auth);
 
-    const { handleSubmit, register, formState: { errors } } = useForm<RegisterForm>({
-        resolver: zodResolver(registerSchema)
+    const { handleSubmit, register, formState: { errors } } = useForm<LoginForm>({
+        resolver: zodResolver(loginSchema)
     });
 
-    const onSubmit = async (data: RegisterForm) => {
-        const result = await dispatch(registerUser(data));
-        if (registerUser.fulfilled.match(result)) {
-            navigate("/login");
+    const onSubmit = async (data: LoginForm) => {
+        const result = await dispatch(loginUser(data));
+        if (loginUser.fulfilled.match(result)) {
+            const role = result.payload.role;
+            if (role === "admin") {
+                navigate("/admin");
+            } else {
+                navigate("/dashboard");
+            }
         }
     };
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh" }}>
 
-            {/* LEFT SIDE — same as login */}
+            {/* LEFT SIDE */}
             <Box sx={{
                 width: { xs: 0, md: "50%" },
                 display: { xs: "none", md: "flex" },
@@ -99,10 +104,10 @@ const Register = () => {
                 <Box sx={{ width: "100%", maxWidth: 360 }}>
 
                     <Typography variant="h6" sx={{ fontWeight: 500, mb: 0.5 }}>
-                        Create account
+                        Welcome back
                     </Typography>
                     <Typography sx={{ fontSize: 13, color: "text.secondary", mb: 3 }}>
-                        Join FlowTask today
+                        Sign in to your account
                     </Typography>
 
                     {error && (
@@ -117,15 +122,6 @@ const Register = () => {
                         sx={{ display: "flex", flexDirection: "column", gap: 2 }}
                     >
                         <TextField
-                            label="Full name"
-                            size="small"
-                            fullWidth
-                            {...register("name")}
-                            error={!!errors.name}
-                            helperText={errors.name?.message}
-                        />
-
-                        <TextField
                             label="Email"
                             type="email"
                             size="small"
@@ -136,29 +132,31 @@ const Register = () => {
                         />
 
                         <TextField
-                            label="Password"
-                            type={showPassword ? "text" : "password"}
-                            size="small"
-                            fullWidth
-                            {...register("password")}
-                            error={!!errors.password}
-                            helperText={errors.password?.message}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            edge="end"
-                                            size="small"
-                                        >
-                                            {showPassword
-                                                ? <VisibilityOff fontSize="small" />
-                                                : <Visibility fontSize="small" />
-                                            }
-                                        </IconButton>
-                                    </InputAdornment>
-                                )
-                            }}
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        size="small"
+                        fullWidth
+                        {...register("password")}
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
+                        slotProps={{
+                            input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                    size="small"
+                                >
+                                    {showPassword
+                                    ? <VisibilityOff fontSize="small" />
+                                    : <Visibility fontSize="small" />
+                                    }
+                                </IconButton>
+                                </InputAdornment>
+                            )
+                            }
+                        }}
                         />
 
                         <Button
@@ -178,18 +176,18 @@ const Register = () => {
                         >
                             {loading
                                 ? <CircularProgress size={18} color="inherit" />
-                                : "Create account"
+                                : "Sign in"
                             }
                         </Button>
                     </Box>
 
                     <Typography sx={{ fontSize: 12, color: "text.secondary", textAlign: "center", mt: 2.5 }}>
-                        Have account?{" "}
+                        No account?{" "}
                         <Link
-                            to="/login"
+                            to="/register"
                             style={{ color: "#1D9E75", fontWeight: 500, textDecoration: "none" }}
                         >
-                            Sign in
+                            Register here
                         </Link>
                     </Typography>
                 </Box>
@@ -198,6 +196,4 @@ const Register = () => {
     );
 };
 
-export default Register;
-
-
+export default Login;

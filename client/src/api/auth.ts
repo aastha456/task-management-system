@@ -1,5 +1,5 @@
-import type { LoginForm } from "../pages/Login";
-import type { RegisterForm } from "../pages/Register";
+import type { LoginForm } from "../pages/auth/Login";
+import type { RegisterForm } from "../pages/auth/Register";
 import http from "../utils/http";
 
 export const login = async (data: LoginForm) => {

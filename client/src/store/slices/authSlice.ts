@@ -9,8 +9,8 @@ import {
 } from "../../utils/token";
 
 import { login, register, logout } from "../../api/auth";
-import type { LoginForm } from "../../pages/Login";
-import type { RegisterForm } from "../../pages/Register";
+import type { LoginForm } from "../../pages/auth/Login";
+import type { RegisterForm } from "../../pages/auth/Register";
 
 export interface AuthState {
     userId: string | null;
