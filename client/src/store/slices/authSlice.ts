@@ -15,6 +15,7 @@ import type { RegisterForm } from "../../pages/auth/Register";
 export interface AuthState {
     userId: string | null;
     role: string | null;
+    name: string | null;
     accessToken: string | null;
     refreshToken: string | null;
     loading: boolean;
@@ -23,27 +24,29 @@ export interface AuthState {
 }
 
 const parseUserFromToken = (token: string | null) => {
-    if (!token) return { userId: null, role: null };
+    if (!token) return { userId: null, role: null, name: null };
 
     try {
         const decoded = getDecodedToken(token);
         return {
             userId: decoded.userId,
-            role: decoded.role || "user"
+            role: decoded.role || "user",
+            name: decoded.name || null
         };
     } catch {
-        return { userId: null, role: null };
+        return { userId: null, role: null, name: null };
     }
 };
 
 const accessToken = getAccessToken();
 const refreshToken = getRefreshToken();
 
-const { userId, role } = parseUserFromToken(accessToken);
+const { userId, role, name } = parseUserFromToken(accessToken);
 
 const initialState: AuthState = {
     userId,
     role,
+    name,
     accessToken,
     refreshToken,
     loading: false,
@@ -105,12 +108,13 @@ const authSlice = createSlice({
                 setAccessToken(accessToken);
                 setRefreshToken(refreshToken);
 
-                const { userId, role } = parseUserFromToken(accessToken);
+                const { userId, role, name } = parseUserFromToken(accessToken);
 
                 state.accessToken = accessToken;
                 state.refreshToken = refreshToken;
                 state.userId = userId;
                 state.role = role;
+                state.name = name;
                 state.loading = false;
                 state.isAuthenticated = true;
             })
