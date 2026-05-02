@@ -8,3 +8,5 @@ export interface Task {
     assignedTo?: string;
     createdBy: string;
 }
+
+export type TaskForm = Omit<Task, "_id" | "createdBy">;

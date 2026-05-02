@@ -6,7 +6,7 @@ const MainLayout = () => {
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f9fafb" }}>
             <Sidebar />
-            <Box sx={{ flex: 1, overflow: "auto" }}>
+            <Box sx={{ flex: 1, overflow: "auto", p: 3}}>
                 <Outlet />
             </Box>
         </Box>

@@ -11,6 +11,7 @@ import ProjectPage from './pages/user/ProjectPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminTasksPage from './pages/admin/AdminTasksPage';
+import AdminWorkspacePage from './pages/admin/AdminWorkspacePage';
 
 
 const Router = () => {
@@ -42,6 +43,7 @@ const Router = () => {
                 <Route index element={<AdminDashboard />} />
                 <Route path="users" element={<AdminUsersPage />} />
                 <Route path="tasks" element={<AdminTasksPage />} />
+                <Route path="workspaces" element={<AdminWorkspacePage />} />
             </Route>
 
             <Route path="*" element={<h1>Not found</h1>}/>
