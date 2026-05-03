@@ -12,7 +12,11 @@ export const createWorkspace = async (data: any, userId: string) => {
     return workspace;
 };
 
-export const getAllWorkspaces = async (userId: string) => {
+export const getAllWorkspaces = async (userId: string, userRole: string) => {
+
+    if(userRole === "admin"){
+        return await WorkspaceModel.find();
+    }
     const memberships = await WorkspaceMemberModel.find({ user: userId }).populate('workspace');
     return memberships.map(membership => membership.workspace);
 };
@@ -49,48 +53,74 @@ export const updateWorkspace = async (id: string, data: any, userId: string) => 
 };
 
 
-export const deleteWorkspace = async (id: string, userId: string) => {
+export const deleteWorkspace = async (id: string, userId: string, userRole: string) => {
     const workspace = await WorkspaceModel.findById(id);
     if (!workspace) throw new Error("Workspace not found");
 
-    // owner matra delete garna sakcha
-    if (workspace.owner.toString() !== userId) {
+    // only owner and admin is able to delete
+    const isOwner = workspace.owner.toString() === userId;
+    const isAdmin = userRole === "admin";
+    if (!isOwner && !isAdmin) {
         throw new Error("Unauthorized");
     }
 
-    // members pani delete gara
+    // delete members
     await WorkspaceMemberModel.deleteMany({ workspace: id });
     return await WorkspaceModel.findByIdAndDelete(id);
 };
 
-export const addMember = async (workspaceId: string, userId: string, requesterId: string) => {
+export const getMembers = async (workspaceId: string) => {
+     return await WorkspaceMemberModel.find({ workspace: workspaceId })
+        .populate("user", "name email")
+        .lean();
+};
+
+export const addMember = async (workspaceId: string, userId: string, requesterId: string, requesterRole: string, role: string = "member") => {
     const workspace = await WorkspaceModel.findById(workspaceId);
     if (!workspace) throw new Error("Workspace not found");
 
-    // owner matra member add garna sakcha
-    if (workspace.owner.toString() !== requesterId) {
+     
+    // owner and admin can add members
+    const isOwner = workspace.owner.toString() === requesterId;
+    const isAdmin = requesterRole === "admin";
+    if (!isOwner && !isAdmin) {
         throw new Error("Unauthorized");
     }
 
-    // already member chha ki check
+    const allowedRoles = ["member", "admin"];
+    if(!allowedRoles.includes(role)){
+        throw new Error("Cannot assign owner role")
+    }
+
+    if(role === "owner"){
+        throw new Error("Cannot assign owner role")
+
+    }
+
+    // check if the user is already a member
     const existing = await WorkspaceMemberModel.findOne({
         workspace: workspaceId,
         user: userId
     });
     if (existing) throw new Error("User is already a member");
 
-    return await WorkspaceMemberModel.create({
+    const member = await WorkspaceMemberModel.create({
         workspace: workspaceId,
         user: userId,
-        role: 'member'
+        role: role
     });
+
+    return await member.populate("user", "name email");
+
 };
 
-export const removeMember = async (workspaceId: string, userId: string, requesterId: string) => {
+export const removeMember = async (workspaceId: string, userId: string, requesterId: string, requesterRole: string) => {
     const workspace = await WorkspaceModel.findById(workspaceId);
     if (!workspace) throw new Error("Workspace not found");
 
-    if (workspace.owner.toString() !== requesterId) {
+    const isOwner = workspace.owner.toString() === requesterId;
+    const isAdmin = requesterRole === "admin";
+    if (!isOwner && !isAdmin) {
         throw new Error("Unauthorized");
     }
 
