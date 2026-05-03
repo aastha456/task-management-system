@@ -1,302 +1,3 @@
-// import { useEffect, useState } from "react";
-// import {
-//     Box,
-//     Typography,
-//     Paper,
-//     Button,
-//     Avatar,
-//     Dialog,
-//     DialogTitle,
-//     DialogContent,
-//     DialogActions,
-//     TextField,
-//     Switch,
-//     FormControlLabel,
-//     CircularProgress,
-//     IconButton,
-//     Chip
-// } from "@mui/material";
-
-// import {
-//     Add as AddIcon,
-//     Delete as DeleteIcon
-// } from "@mui/icons-material";
-
-// import { useAppDispatch, useAppSelector } from "../../hooks/storeHooks";
-// import {
-//     fetchWorkspaces,
-//     createWorkspace,
-//     deleteWorkspace
-// } from "../../store/slices/workspaceSlice";
-
-// import { COLORS } from "../../constants/theme";
-
-// const AdminWorkspacePage = () => {
-//     const dispatch = useAppDispatch();
-//     const { workspaces, loading } = useAppSelector((state) => state.workspaces);
-
-//     const [createOpen, setCreateOpen] = useState(false);
-
-//     const [form, setForm] = useState({
-//         name: "",
-//         description: "",
-//         isPrivate: false
-//     });
-
-//     useEffect(() => {
-//         dispatch(fetchWorkspaces());
-//     }, [dispatch]);
-
-//     // Create workspace
-//     const handleCreate = async () => {
-//         if (!form.name) return;
-
-//         await dispatch(createWorkspace(form));
-
-//         setCreateOpen(false);
-//         setForm({
-//             name: "",
-//             description: "",
-//             isPrivate: false
-//         });
-//     };
-
-//     // Delete workspace (global admin / owner permission backend handles it)
-//     const handleDelete = async (id: string) => {
-//         if (confirm("Are you sure you want to delete this workspace?")) {
-//             await dispatch(deleteWorkspace(id));
-//         }
-//     };
-
-//     if (loading) {
-//         return (
-//             <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
-//                 <CircularProgress sx={{ color: COLORS.primary }} />
-//             </Box>
-//         );
-//     }
-
-//     return (
-//         <Box>
-
-//             {/* HEADER */}
-//             <Box sx={{
-//                 display: "flex",
-//                 justifyContent: "space-between",
-//                 alignItems: "center",
-//                 mb: 3
-//             }}>
-//                 <Box>
-//                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
-//                         Workspaces
-//                     </Typography>
-
-//                     <Typography sx={{ fontSize: 13, color: "text.secondary" }}>
-//                         {workspaces.length} total workspaces
-//                     </Typography>
-//                 </Box>
-
-//                 <Button
-//                     variant="contained"
-//                     startIcon={<AddIcon />}
-//                     onClick={() => setCreateOpen(true)}
-//                     sx={{
-//                         bgcolor: COLORS.primary,
-//                         "&:hover": { bgcolor: COLORS.primaryDark }
-//                     }}
-//                 >
-//                     New Workspace
-//                 </Button>
-//             </Box>
-
-//             {/* WORKSPACE GRID */}
-//             <Box
-//                 sx={{
-//                     display: "grid",
-//                     gridTemplateColumns: {
-//                         xs: "1fr",
-//                         sm: "repeat(2, 1fr)",
-//                         md: "repeat(3, 1fr)"
-//                     },
-//                     gap: 2
-//                 }}
-//             >
-//                 {workspaces.length === 0 ? (
-//                     <Paper
-//                         elevation={0}
-//                         sx={{
-//                             p: 4,
-//                             textAlign: "center",
-//                             border: "1px solid #e5e7eb",
-//                             borderRadius: 3,
-//                             gridColumn: "1 / -1"
-//                         }}
-//                     >
-//                         <Typography sx={{ color: "text.secondary", fontSize: 14 }}>
-//                             No workspaces found
-//                         </Typography>
-//                     </Paper>
-//                 ) : (
-//                     workspaces.map((ws) => (
-//                         <Paper
-//                             key={ws._id}
-//                             elevation={0}
-//                             sx={{
-//                                 p: 3,
-//                                 border: "1px solid #e5e7eb",
-//                                 borderRadius: 3,
-//                                 "&:hover": {
-//                                     borderColor: COLORS.primary
-//                                 }
-//                             }}
-//                         >
-//                             {/* TOP */}
-//                             <Box sx={{
-//                                 display: "flex",
-//                                 justifyContent: "space-between",
-//                                 mb: 2
-//                             }}>
-//                                 <Avatar
-//                                     sx={{
-//                                         width: 40,
-//                                         height: 40,
-//                                         bgcolor: COLORS.primaryLight,
-//                                         color: COLORS.primary,
-//                                         fontWeight: 600
-//                                     }}
-//                                 >
-//                                     {ws.name?.[0]?.toUpperCase()}
-//                                 </Avatar>
-
-//                                 <IconButton
-//                                     size="small"
-//                                     onClick={() => handleDelete(ws._id)}
-//                                     sx={{
-//                                         color: "#6b7280",
-//                                         "&:hover": { color: "#dc2626" }
-//                                     }}
-//                                 >
-//                                     <DeleteIcon fontSize="small" />
-//                                 </IconButton>
-//                             </Box>
-
-//                             {/* INFO */}
-//                             <Typography sx={{ fontWeight: 600, fontSize: 15 }}>
-//                                 {ws.name}
-//                             </Typography>
-
-//                             <Typography
-//                                 sx={{
-//                                     fontSize: 12,
-//                                     color: "text.secondary",
-//                                     mt: 0.5,
-//                                     mb: 2
-//                                 }}
-//                             >
-//                                 {ws.description || "No description"}
-//                             </Typography>
-
-//                             {/* STATUS */}
-//                             <Chip
-//                                 label={ws.isPrivate ? "Private" : "Public"}
-//                                 size="small"
-//                                 sx={{
-//                                     fontSize: 11,
-//                                     height: 22,
-//                                     bgcolor: ws.isPrivate
-//                                         ? "#FEF2F2"
-//                                         : COLORS.primaryLight,
-//                                     color: ws.isPrivate
-//                                         ? "#dc2626"
-//                                         : COLORS.primary
-//                                 }}
-//                             />
-//                         </Paper>
-//                     ))
-//                 )}
-//             </Box>
-
-//             {/* CREATE WORKSPACE DIALOG */}
-//             <Dialog
-//                 open={createOpen}
-//                 onClose={() => setCreateOpen(false)}
-//                 fullWidth
-//                 maxWidth="sm"
-//             >
-//                 <DialogTitle sx={{ fontWeight: 600 }}>
-//                     Create Workspace
-//                 </DialogTitle>
-
-//                 <DialogContent sx={{ pt: 2 }}>
-
-//                     <TextField
-//                         fullWidth
-//                         label="Name"
-//                         size="small"
-//                         value={form.name}
-//                         onChange={(e) =>
-//                             setForm({ ...form, name: e.target.value })
-//                         }
-//                         sx={{ mb: 2 }}
-//                     />
-
-//                     <TextField
-//                         fullWidth
-//                         label="Description"
-//                         size="small"
-//                         multiline
-//                         rows={2}
-//                         value={form.description}
-//                         onChange={(e) =>
-//                             setForm({
-//                                 ...form,
-//                                 description: e.target.value
-//                             })
-//                         }
-//                         sx={{ mb: 2 }}
-//                     />
-
-//                     <FormControlLabel
-//                         control={
-//                             <Switch
-//                                 checked={form.isPrivate}
-//                                 onChange={(e) =>
-//                                     setForm({
-//                                         ...form,
-//                                         isPrivate: e.target.checked
-//                                     })
-//                                 }
-//                             />
-//                         }
-//                         label="Private workspace"
-//                     />
-
-//                 </DialogContent>
-
-//                 <DialogActions>
-//                     <Button onClick={() => setCreateOpen(false)}>
-//                         Cancel
-//                     </Button>
-
-//                     <Button
-//                         variant="contained"
-//                         onClick={handleCreate}
-//                         sx={{
-//                             bgcolor: COLORS.primary,
-//                             "&:hover": { bgcolor: COLORS.primaryDark }
-//                         }}
-//                     >
-//                         Create
-//                     </Button>
-//                 </DialogActions>
-//             </Dialog>
-
-//         </Box>
-//     );
-// };
-
-// export default AdminWorkspacePage;
-
 import { useEffect, useState } from "react";
 import {
     Box, Typography, Paper, Button, Avatar,
@@ -311,36 +12,35 @@ import {
 } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/storeHooks";
 import { fetchWorkspaces, createWorkspace, deleteWorkspace } from "../../store/slices/workspaceSlice";
+import {fetchMembers, addMember, removeMember} from "../../store/slices/workspaceMemberSlice";
 import { fetchUsers } from "../../store/slices/userSlice";
 import { COLORS } from "../../constants/theme";
-import http from "../../utils/http";
-import type { Workspace, WorkspaceMember } from "../../interfaces/workspace";
+import type { Workspace} from "../../interfaces/workspace";
+import {toast} from "react-toastify";
 
 const AdminWorkspacePage = () => {
     const dispatch = useAppDispatch();
     const { workspaces, loading } = useAppSelector((state) => state.workspaces);
     const { users } = useAppSelector((state) => state.users);
+    const { members } = useAppSelector((state) => state.members);
 
     const [createOpen, setCreateOpen] = useState(false);
     const [membersOpen, setMembersOpen] = useState(false);
     const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
-    const [members, setMembers] = useState<WorkspaceMember[]>([]);
+    
     const [selectedUser, setSelectedUser] = useState("");
+     const[selectedRole, setSelectedRole] = useState("member");
+
     const [form, setForm] = useState({
         name: "", description: "", isPrivate: false
     });
+
+   
 
     useEffect(() => {
         dispatch(fetchWorkspaces());
         dispatch(fetchUsers());
     }, [dispatch]);
-
-    const fetchMembers = async (workspaceId: string) => {
-        try {
-            const res = await http.get(`/workspaces/${workspaceId}/members`);
-            setMembers(res.data.data);
-        } catch { setMembers([]); }
-    };
 
     const handleOpenMembers = async (ws: Workspace) => {
         setSelectedWorkspace(ws);
@@ -349,25 +49,32 @@ const AdminWorkspacePage = () => {
     };
 
     const handleAddMember = async () => {
-        if (!selectedUser || !selectedWorkspace) return;
-        try {
-            await http.post(`/workspaces/${selectedWorkspace._id}/members`, {
-                userId: selectedUser
-            });
-            await fetchMembers(selectedWorkspace._id);
-            setSelectedUser("");
-        } catch (err) { console.error(err); }
+         if (!selectedUser || !selectedWorkspace) return;
+
+        await dispatch(addMember({
+            workspaceId: selectedWorkspace._id,
+            userId: selectedUser,
+            role: selectedRole
+        }));
+
+        dispatch(fetchMembers(selectedWorkspace._id));
+
+        setSelectedUser("");
+        setSelectedRole("member");
+
+        toast.success("Member added successfully");
     };
 
     const handleRemoveMember = async (userId: string) => {
-        if (!confirm("Remove this member?")) return;
+         if (!confirm("Remove this member?")) return;
         if (!selectedWorkspace) return;
-        try {
-            await http.delete(`/workspaces/${selectedWorkspace._id}/members`, {
-                data: { userId }
-            });
-            await fetchMembers(selectedWorkspace._id);
-        } catch (err) { console.error(err); }
+
+        await dispatch(removeMember({
+            workspaceId: selectedWorkspace._id,
+            userId
+        }));
+
+        dispatch(fetchMembers(selectedWorkspace._id));
     };
 
     const handleCreate = async () => {
@@ -531,12 +238,24 @@ const AdminWorkspacePage = () => {
                             <FormControl size="small" fullWidth>
                                 <InputLabel>Add member</InputLabel>
                                 <Select value={selectedUser} label="Add member"
-                                    onChange={(e) => setSelectedUser(e.target.value)}>
+                                    onChange={(e) => setSelectedUser(e.target.value)}
+                                    displayEmpty>
                                     {nonMembers.map((u) => (
                                         <MenuItem key={u._id} value={u._id}>
                                             {u.name} — {u.email}
                                         </MenuItem>
                                     ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl size="small" sx={{ minWidth: 120 }}>
+                                <InputLabel>Role</InputLabel>
+                                <Select
+                                    value={selectedRole}
+                                    label="Role"
+                                    onChange={(e) => setSelectedRole(e.target.value)}
+                                >
+                                    <MenuItem value="member">Member</MenuItem>
+                                    <MenuItem value="admin">Admin</MenuItem>
                                 </Select>
                             </FormControl>
                             <Button variant="contained"
