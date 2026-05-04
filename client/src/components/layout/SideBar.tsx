@@ -15,6 +15,7 @@ import { useNavigate, useLocation } from "react-router";
 import { useAppDispatch, useAppSelector } from "../../hooks/storeHooks";
 import { logoutUser } from "../../store/slices/authSlice";
 import { COLORS } from "../../constants/theme";
+import { toast } from "react-toastify";
 
 const Sidebar = () => {
     const navigate = useNavigate();
@@ -42,6 +43,7 @@ const Sidebar = () => {
 
     const handleLogout = async () => {
         await dispatch(logoutUser());
+        toast.success("Logged out successful");
         navigate("/login");
     };
 
@@ -125,7 +127,7 @@ const Sidebar = () => {
                                             sx: {
                                                 fontSize: 13,
                                                 fontWeight: isActive ? 500 : 400,
-                                                color: isActive ? COLORS.primary : "#374151" // ✅
+                                                color: isActive ? COLORS.primary : "#374151" 
                                             }
                                         }
                                     }}
