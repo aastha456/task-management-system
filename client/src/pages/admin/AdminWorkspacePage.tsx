@@ -22,7 +22,6 @@ const AdminWorkspacePage = () => {
     const dispatch = useAppDispatch();
     const { workspaces, loading } = useAppSelector((state) => state.workspaces);
     const { users } = useAppSelector((state) => state.users);
-    const { members } = useAppSelector((state) => state.members);
 
     const [createOpen, setCreateOpen] = useState(false);
     const [membersOpen, setMembersOpen] = useState(false);
@@ -35,7 +34,9 @@ const AdminWorkspacePage = () => {
         name: "", description: "", isPrivate: false
     });
 
-   
+    const membersByWorkspace = useAppSelector((state) => state.members.membersByWorkspace);
+
+    const members = membersByWorkspace?.[selectedWorkspace?._id || ""] || [];
 
     useEffect(() => {
         dispatch(fetchWorkspaces());
@@ -44,37 +45,44 @@ const AdminWorkspacePage = () => {
 
     const handleOpenMembers = async (ws: Workspace) => {
         setSelectedWorkspace(ws);
-        await fetchMembers(ws._id);
+        setSelectedUser(""); // reset UI state
+        setSelectedRole("member");
         setMembersOpen(true);
+        await dispatch(fetchMembers(ws._id));
+       
     };
 
     const handleAddMember = async () => {
          if (!selectedUser || !selectedWorkspace) return;
 
-        await dispatch(addMember({
+        const result = await dispatch(addMember({
             workspaceId: selectedWorkspace._id,
             userId: selectedUser,
             role: selectedRole
         }));
 
-        dispatch(fetchMembers(selectedWorkspace._id));
+         if (addMember.fulfilled.match(result)) {
+           toast.success("Member added successfully");
+         }
 
-        setSelectedUser("");
-        setSelectedRole("member");
-
-        toast.success("Member added successfully");
+         setSelectedUser("");
+         setSelectedRole("member");
     };
 
     const handleRemoveMember = async (userId: string) => {
          if (!confirm("Remove this member?")) return;
         if (!selectedWorkspace) return;
 
-        await dispatch(removeMember({
+        const result = await dispatch(
+        removeMember({
             workspaceId: selectedWorkspace._id,
             userId
-        }));
+        })
+        );
 
-        dispatch(fetchMembers(selectedWorkspace._id));
+        if (removeMember.fulfilled.match(result)) {
+            toast.success("Member removed");
+        }
     };
 
     const handleCreate = async () => {
