@@ -31,7 +31,7 @@ const Login = () => {
     const result = await dispatch(loginUser(data));
 
     if (loginUser.fulfilled.match(result)) {
-        toast.success("Login successful");
+        toast.success("Login successful", {type: "success"});
 
         const role = result.payload.role;
 

@@ -107,14 +107,14 @@ const AdminTasksPage = () => {
            toast.success("Task updated successfully");
         } else {
            await dispatch(createTask(cleanForm));
-           toast.success("Task created successfully");
+           toast.success("Task created successfully", { type: "success"});
         }
         setOpen(false);
         setEditTask(null);
         dispatch(fetchTasks());
 
         }catch {
-        toast.error("Something went wrong ❌");
+        toast.error("Something went wrong", {type: "error"});
     }
         
 
@@ -125,9 +125,9 @@ const AdminTasksPage = () => {
         if (confirm("Delete this task?")) {
             try {
             await dispatch(deleteTask(id)).unwrap();
-            toast.success("Task deleted successfully");
+            toast.success("Task deleted successfully", { type: "success"});
         } catch {
-            toast.error("Failed to delete task");
+            toast.error("Failed to delete task", { type: "error"});
         }
         }
     };

@@ -78,10 +78,10 @@ const UserTaskPage = () => {
         try {
         if (editTask) {
             await dispatch(updateTask({ id: editTask._id, data: form })).unwrap();
-            toast.success("Task updated successfully");
+            toast.success("Task updated successfully", { type: "success"});
         } else {
             await dispatch(createTask(form)).unwrap();
-            toast.success("Task created successfully");
+            toast.success("Task created successfully", {type: "error"});
         }
 
         setOpen(false);

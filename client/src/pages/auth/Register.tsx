@@ -31,7 +31,7 @@ const Register = () => {
     const result = await dispatch(registerUser(data));
 
     if (registerUser.fulfilled.match(result)) {
-        toast.success("Account created successfully");
+        toast.success("Account created successfully", { type: "success"});
 
         setTimeout(() => {
             navigate("/login");
