@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/storeHooks";
 import { fetchProjects, createProject, deleteProject } from "../../store/slices/projectSlice";
 import { fetchWorkspaces } from "../../store/slices/workspaceSlice";
 import { COLORS } from "../../constants/theme";
+import { toast } from "react-toastify";
 
 const ProjectPage = () => {
     const dispatch = useAppDispatch();
@@ -17,7 +18,11 @@ const ProjectPage = () => {
     const { workspaces } = useAppSelector((state) => state.workspaces);
 
     const [open, setOpen] = useState(false);
-    const [selectedWorkspace, setSelectedWorkspace] = useState("");
+    const [selectedWorkspace, setSelectedWorkspace] = useState(() => {
+        return localStorage.getItem("lastWorkspace") || "";
+    });
+
+
     const [form, setForm] = useState({
         name: "",
         description: "",
@@ -28,17 +33,27 @@ const ProjectPage = () => {
         dispatch(fetchWorkspaces());
     }, [dispatch]);
 
-    useEffect(() => {
+    
+
+   useEffect(() => {
         if (selectedWorkspace) {
             dispatch(fetchProjects(selectedWorkspace));
         }
     }, [selectedWorkspace, dispatch]);
 
     const handleSubmit = async () => {
+        // Form validation'workspaceId' check 
         if (!form.name || !form.workspace) return;
-        await dispatch(createProject(form));
-        setOpen(false);
-        setForm({ name: "", description: "", workspace: "" });
+
+        try {
+            await dispatch(createProject(form)).unwrap();
+            toast.success("Project created successfully");
+            setOpen(false);
+            setForm({ name: "", description: "", workspace: "" });
+            dispatch(fetchProjects(selectedWorkspace)); 
+        } catch {
+             toast.error("Failed to create project");
+        }
     };
 
     const handleDelete = async (id: string) => {
