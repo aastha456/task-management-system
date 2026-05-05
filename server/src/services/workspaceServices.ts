@@ -1,11 +1,12 @@
 import WorkspaceModel from "../models/WorkspaceModel";
 import WorkspaceMemberModel from "../models/WorkspaceMemberModel";
+import { Types } from "mongoose";
 
 export const createWorkspace = async (data: any, userId: string) => {
-    const workspace = await WorkspaceModel.create({ ...data, owner: userId });
+    const workspace = await WorkspaceModel.create({ ...data, owner: new Types.ObjectId(userId) });
     await WorkspaceMemberModel.create({
         workspace: workspace._id,
-        user: userId,
+        user: new Types.ObjectId(userId),
         role: 'owner'
     });
 
@@ -17,26 +18,23 @@ export const getAllWorkspaces = async (userId: string, userRole: string) => {
     if(userRole === "admin"){
         return await WorkspaceModel.find();
     }
-    const memberships = await WorkspaceMemberModel.find({ user: userId }).populate('workspace');
+    const memberships = await WorkspaceMemberModel.find({
+        user: new Types.ObjectId(userId)
+    }).populate("workspace");
     return memberships.map(membership => membership.workspace);
 };
 
 
 export const getWorkspaceById = async (id: string, userId: string) => {
-    const workspace= await WorkspaceMemberModel.findOne({ workspace: id, user: userId }).populate('workspace');
-    if (!workspace) {
-        throw new Error('Workspace not found or access denied');
-    }
 
     const isMember = await WorkspaceMemberModel.findOne({
-        workspace: id,
-        user: userId
-
-    })
+        workspace: new Types.ObjectId(id),
+        user: new Types.ObjectId(userId)
+    }).populate('workspace');
     if(!isMember) {
         throw new Error('Access denied');
     }
-    return workspace;
+    return isMember;
 }   
 
 
@@ -57,7 +55,6 @@ export const deleteWorkspace = async (id: string, userId: string, userRole: stri
     const workspace = await WorkspaceModel.findById(id);
     if (!workspace) throw new Error("Workspace not found");
 
-    // only owner and admin is able to delete
     const isOwner = workspace.owner.toString() === userId;
     const isAdmin = userRole === "admin";
     if (!isOwner && !isAdmin) {
@@ -65,7 +62,9 @@ export const deleteWorkspace = async (id: string, userId: string, userRole: stri
     }
 
     // delete members
-    await WorkspaceMemberModel.deleteMany({ workspace: id });
+    await WorkspaceMemberModel.deleteMany({
+        workspace: new Types.ObjectId(id)
+    });
     return await WorkspaceModel.findByIdAndDelete(id);
 };
 
@@ -88,26 +87,25 @@ export const addMember = async (workspaceId: string, userId: string, requesterId
     }
 
     const allowedRoles = ["member", "admin"];
+
     if(!allowedRoles.includes(role)){
-        throw new Error("Cannot assign owner role")
-    }
-
-    if(role === "owner"){
-        throw new Error("Cannot assign owner role")
-
+        throw new Error("Invalid role")
     }
 
     // check if the user is already a member
     const existing = await WorkspaceMemberModel.findOne({
-        workspace: workspaceId,
-        user: userId
+        workspace: new Types.ObjectId(workspaceId),
+        user: new Types.ObjectId(userId)
     });
-    if (existing) throw new Error("User is already a member");
 
-    const member = await WorkspaceMemberModel.create({
-        workspace: workspaceId,
-        user: userId,
-        role: role
+    if (existing) {
+        throw new Error("User is already a member");
+    }
+
+   const member = await WorkspaceMemberModel.create({
+        workspace: new Types.ObjectId(workspaceId),
+        user: new Types.ObjectId(userId),
+        role
     });
 
     return await member.populate("user", "name email");
@@ -124,8 +122,20 @@ export const removeMember = async (workspaceId: string, userId: string, requeste
         throw new Error("Unauthorized");
     }
 
-    return await WorkspaceMemberModel.findOneAndDelete({
-        workspace: workspaceId,
-        user: userId
+    const member = await WorkspaceMemberModel.findOne({
+        workspace: new Types.ObjectId(workspaceId),
+        user: new Types.ObjectId(userId)
     });
+
+    if(!member){
+        throw new Error("Member not found");
+    }
+
+    if(member.role === "owner"){
+        throw new Error("Cannot remove owner");
+    }
+
+    await WorkspaceMemberModel.deleteOne({ _id: member._id });
+
+    return { message: "Member removed successfully" };
 };

@@ -14,15 +14,17 @@ export const createProject = async (
     } catch (error) { next(error); }
 };
 
-export const getAllProject = async (
+export const getAllProjects = async (
     req: UserRequest, 
     res: Response, 
     next: NextFunction
 ) => {
     try {
         // workspace id is required to fetch projects, it will be passed as query parameter
-        const workspaceId = String(req.query.workspaceId);
-        const response = await projectService.getAllProject(workspaceId, req.user.userId);
+         const workspaceId = req.query.workspaceId
+      ? String(req.query.workspaceId)
+      : "all"; 
+        const response = await projectService.getAllProjects(workspaceId, req.user.userId, req.user.role);
         return successResponse(res, { data: response });
     } catch (error) { next(error); }
 };
@@ -33,7 +35,7 @@ export const getProjectById = async (
     next: NextFunction
 ) => {
     try {
-        const response = await projectService.getProjectById(String(req.params.id), req.user.userId);
+        const response = await projectService.getProjectById(String(req.params.id), req.user.userId, req.user.role);
         return successResponse(res, { data: response });
     } catch (error) { next(error); }
 };
@@ -47,7 +49,8 @@ export const updateProject = async (
         const response = await projectService.updateProject(
             String(req.params.id),
             req.body,
-            req.user.userId
+            req.user.userId,
+            req.user.role
         );
         return successResponse(res, { data: response });
     } catch (error) { next(error); }
@@ -61,7 +64,8 @@ export const deleteProject = async (
     try {
         const response = await projectService.deleteProject(
             String(req.params.id),
-            req.user.userId
+            req.user.userId,
+            req.user.role
         );
         return successResponse(res, { data: response });
     } catch (error) { next(error); }

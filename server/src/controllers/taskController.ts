@@ -11,7 +11,8 @@ export const createTask = async (
   try {
     const response = await taskService.createTask(
       req.body,
-      req.user.userId
+      req.user.userId,
+      req.user.role
     );
     return successResponse(res, { data: response });
   } catch (error) {
@@ -20,12 +21,15 @@ export const createTask = async (
 };
 
 export const getAllTasks = async (
-  req: Request,
+  req: UserRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const response = await taskService.getAllTasks();
+    const response = await taskService.getAllTasks(
+      req.user.userId,
+      req.user.role
+    );
     return successResponse(res, { data: response });
   } catch (error) {
     next(error);
@@ -33,12 +37,12 @@ export const getAllTasks = async (
 };
 
 export const getTaskById = async (
-  req: Request,
+  req: UserRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const response = await taskService.getTaskById(String(req.params.id));
+    const response = await taskService.getTaskById(String(req.params.id), req.user.userId, req.user.role);
     return successResponse(res, { data: response });
   } catch (error) {
     next(error);
@@ -54,7 +58,8 @@ export const updateTask = async (
     const response = await taskService.updateTask(
       String(req.params.id),
       req.body,
-      req.user.userId
+      req.user.userId,
+      req.user.role
     );
     return successResponse(res, { data: response });
   } catch (error) {

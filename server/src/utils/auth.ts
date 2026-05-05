@@ -11,7 +11,7 @@ export const generateAccessToken = (user: IUser) => {
             name: user.name
         },
         config.JWT_SECRET,{
-            expiresIn: "30m"
+            expiresIn: "1d"
         }
     )
 }

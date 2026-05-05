@@ -7,6 +7,8 @@ export const createTaskSchema = z.object({
   priority: z.enum(["low", "medium", "high"]).optional(),
   dueDate: z.string().optional(),
   assignedTo: z.string().optional(),
+  workspaceId: z.string().min(1), 
+  projectId: z.string().optional(), 
 });
 
 export const updateTaskSchema = z.object({

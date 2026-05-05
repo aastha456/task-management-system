@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { Project } from "../../interfaces/project";
+import type { Project, CreateProjectPayload} from "../../interfaces/project";
 import {
+    getAllProjectsApi,
     getProjectsApi,
     createProjectApi,
     deleteProjectApi
@@ -25,14 +26,30 @@ export const fetchProjects = createAsyncThunk(
             const res = await getProjectsApi(workspaceId);
             return res.data.data;
         } catch (error) {
-            return rejectWithValue(error instanceof Error ? error.message : "An unknown error occurred");
+            return rejectWithValue(error instanceof Error ? error.message : "Failed");
         }
     }
 );
 
-export const createProject = createAsyncThunk(
+export const fetchAllProjects = createAsyncThunk(
+    "projects/getAllAdmin",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await getAllProjectsApi();
+            return res.data.data;
+        } catch (error) {
+            return rejectWithValue(error instanceof Error ? error.message : "Failed");
+        }
+    }
+);
+
+export const createProject = createAsyncThunk<
+    Project,                 
+    CreateProjectPayload,    
+    { rejectValue: string }
+>(
     "projects/create",
-    async (data: Partial<Project>, { rejectWithValue }) => {
+    async (data, { rejectWithValue }) => {
         try {
             const res = await createProjectApi(data);
             return res.data.data;
@@ -62,12 +79,24 @@ const projectSlice = createSlice({
         builder
             .addCase(fetchProjects.pending, (state) => {
                 state.loading = true;
+                state.projects = [];
             })
             .addCase(fetchProjects.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projects = action.payload;
             })
             .addCase(fetchProjects.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(fetchAllProjects.pending, (state) => { 
+                state.loading = true; 
+            })
+            .addCase(fetchAllProjects.fulfilled, (state, action) => {
+                state.loading = false;
+                state.projects = action.payload;
+            })
+            .addCase(fetchAllProjects.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
