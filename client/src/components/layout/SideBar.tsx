@@ -37,6 +37,7 @@ const Sidebar = () => {
         { label: "Users", icon: <PeopleIcon fontSize="small" />, path: "/admin/users" },
         { label: "Tasks", icon: <TaskIcon fontSize="small" />, path: "/admin/tasks" },
         { label: "Workspaces", icon: <WorkspaceIcon fontSize="small" />, path: "/admin/workspaces" },
+        { label: "Projects", icon: <ProjectIcon fontSize="small" />, path: "/admin/projects" },
     ];
 
     const navItems = isAdmin ? adminNavItems : userNavItems;
@@ -81,23 +82,6 @@ const Sidebar = () => {
                     FlowTask
                 </Typography>
             </Box>
-
-            {/* Role badge */}
-            {/* <Box sx={{ px: 2, pt: 2, pb: 1 }}>
-                <Box sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    bgcolor: isAdmin ? COLORS.primaryLight : "#F3F4F6",  
-                    color: isAdmin ? COLORS.primaryDark : "#374151",      
-                    fontSize: 11,
-                    fontWeight: 500,
-                    px: 1.5,
-                    py: 0.4,
-                    borderRadius: 10
-                }}>
-                    {isAdmin ? "Admin" : "User"}
-                </Box>
-            </Box> */}
 
             {/* Nav items */}
             <List sx={{ px: 1, flex: 1 }}>
