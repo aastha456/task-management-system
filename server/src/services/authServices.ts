@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { generateAccessToken, generateRefreshToken } from "../utils/auth";
 import jwt from "jsonwebtoken";
 import SessionModel from "../models/SessionModel";
+import logger from "../utils/logger";
 
 
 export const register = async (data: UserAuthRequest) => {
@@ -24,19 +25,25 @@ export const register = async (data: UserAuthRequest) => {
 
 export const login = async (data: UserLoginRequest ) => {
     const { email, password } = data;
+    logger.info(`[AUTH][LOGIN] Attempt`, { email });
+
     const user = await UserModel.findOne( {email }).select("+password");
     if(!user){
+       logger.warn(`[AUTH][LOGIN] User not found`, { email });
        throw new Error("User not found");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if(!isPasswordValid){
+        logger.warn(`[AUTH][LOGIN] Invalid password`, { email });
         throw new Error("Password is invalid");
 
     }
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
+
+    logger.info(`[AUTH][LOGIN] Success`, { userId: user._id });
 
     const decoded = jwt.decode(refreshToken) as { exp: number };
     const expiresAt = new Date(decoded.exp * 1000);
@@ -66,10 +73,12 @@ export const logout = async (refreshToken: string) => {
 export const generateAccessTokenBasedOnRefreshToken = async (refreshToken: string) => {
     const session = await SessionModel.findOne({refreshToken});
     if(!session){
+        logger.warn(`[AUTH][REFRESH] Invalid refresh token`);
         throw new Error("Invalid refresh token");
     }
 
     if(session.expiresAt < new Date()){
+        logger.warn(`[AUTH][REFRESH] Expired refresh token`, { userId: session.userId });
         await SessionModel.findByIdAndDelete(session._id);
         throw new Error("Refresh token has expired. Please log in again.");
     }

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from '../services/authServices';
 import httpCodes from "../constants/httpCodes";
 import { successResponse } from "../utils/responseHelper";
+import logger  from "../utils/logger";
 
 export const register = async(
     req: Request,
@@ -26,8 +27,13 @@ export const login = async (
     next: NextFunction
 ) => {
     try{
+        logger.info(`[AUTH][LOGIN] attempt`, { email: req.body.email });
+
         const response = await authServices.login(req.body);
-        return successResponse( res, { data: response})
+
+        logger.info(`[AUTH][LOGIN] success`, { email: req.body.email });
+
+return successResponse(res, { data: response });
 
     } catch(error){
         next(error)

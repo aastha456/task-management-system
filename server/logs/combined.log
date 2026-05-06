@@ -1,0 +1,8 @@
+2026-05-06 22:57:01 [info]: [AUTH][LOGIN] attempt
+2026-05-06 22:57:01 [info]: [AUTH][LOGIN] success
+2026-05-06 23:10:28 [info]: [AUTH][LOGIN] attempt
+2026-05-06 23:10:28 [info]: [AUTH][LOGIN] Attempt
+2026-05-06 23:10:28 [warn]: [AUTH][LOGIN] User not found
+2026-05-06 23:11:07 [info]: [AUTH][LOGIN] attempt
+2026-05-06 23:11:07 [info]: [AUTH][LOGIN] Attempt
+2026-05-06 23:11:07 [warn]: [AUTH][LOGIN] Invalid password
