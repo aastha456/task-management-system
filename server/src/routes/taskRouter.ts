@@ -4,12 +4,13 @@ import { authenticate } from "../middlewares/authenticate";
 import { validateRequestBody, validateRequestParams } from "../middlewares/validation";
 import { createTaskSchema } from "../schemas/task";
 import { idSchema } from "../schemas/common";
+import { upload } from "../middlewares/multer";
 
 const router = Router();
 
-router.post("/", authenticate, validateRequestBody(createTaskSchema), taskController.createTask);
+router.post("/", authenticate, upload.single("file"), validateRequestBody(createTaskSchema), taskController.createTask);
 router.get("/", authenticate, taskController.getAllTasks);
-router.get("/:id", validateRequestParams(idSchema), authenticate, taskController.getTaskById);
+router.get("/:id", validateRequestParams(idSchema), authenticate,upload.single("file"), taskController.getTaskById);
 router.put("/:id", validateRequestParams(idSchema), authenticate, taskController.updateTask);
 router.delete("/:id", validateRequestParams(idSchema), authenticate, taskController.deleteTask);
 

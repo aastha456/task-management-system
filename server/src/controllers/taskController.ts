@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as taskService from "../services/taskServices";
 import { successResponse } from "../utils/responseHelper";
 import { UserRequest } from "../middlewares/authenticate";
+import { uploadToCloudinary } from "../services/cloudinaryServices";
 
 export const createTask = async (
   req: UserRequest,
@@ -9,8 +10,21 @@ export const createTask = async (
   next: NextFunction
 ) => {
   try {
+    let attachmentUrl;
+    if(req.file){
+      try{
+        const result: any = await uploadToCloudinary(req.file.buffer);
+        attachmentUrl = result.secure_url;
+
+      } catch(error){
+         console.log("CLOUDINARY ERROR:", error);
+        throw error;
+      }
+         
+    }
+
     const response = await taskService.createTask(
-      req.body,
+      { ...req.body, attachment: attachmentUrl },
       req.user.userId,
       req.user.role
     );

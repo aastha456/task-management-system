@@ -31,6 +31,10 @@ export const createTask = async (data: any, userId: string, role: string) => {
         dueDate: data.dueDate ? new Date(data.dueDate) : undefined
     };
 
+    if(data.attachment){
+        taskData.attachment = data.attachment;
+    }
+
     if (data.projectId && Types.ObjectId.isValid(data.projectId)) {
         taskData.projectId = new Types.ObjectId(data.projectId);
     }

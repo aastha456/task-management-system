@@ -10,6 +10,7 @@ export interface ITask extends Document {
   projectId: Types.ObjectId; // Reference to Project
   workspaceId: Types.ObjectId; // Reference to Workspace
   createdBy: Types.ObjectId; // Reference to User
+  attachment?: string;
 }
 
 const TaskSchema: Schema = new Schema<ITask>(
@@ -53,6 +54,9 @@ const TaskSchema: Schema = new Schema<ITask>(
             ref: 'User', 
             required: true 
         },
+        attachment: {
+            type: String
+        }
     },
     { 
         timestamps: true 
