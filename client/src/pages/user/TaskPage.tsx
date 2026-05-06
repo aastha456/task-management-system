@@ -81,7 +81,7 @@ const UserTaskPage = () => {
             toast.success("Task updated successfully", { type: "success"});
         } else {
             await dispatch(createTask(form)).unwrap();
-            toast.success("Task created successfully", {type: "error"});
+            toast.success("Task created successfully");
         }
 
         setOpen(false);
@@ -220,7 +220,7 @@ const UserTaskPage = () => {
                             <Select
                                 value={task.status}
                                 size="small"
-                                onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                                onChange={(e) => handleStatusChange(task._id, e.target.value as "todo" | "in-progress" | "done")}
                                 sx={{ fontSize: 12, height: 28, minWidth: 120 }}
                             >
                                 <MenuItem value="todo" sx={{ fontSize: 12 }}> Todo</MenuItem>

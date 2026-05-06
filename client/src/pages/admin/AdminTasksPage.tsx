@@ -239,6 +239,13 @@ const AdminTasksPage = () => {
                                     {task.title}
                                 </Typography>
 
+                                            {task.createdBy && typeof task.createdBy === "object" && (
+                    <Typography sx={{ fontSize: 11, color: "text.secondary" }}>
+                        Created by: {task.createdBy.name}
+                    </Typography>
+                )}
+
+
                                 {task.description && (
                                     <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
                                         {task.description}
