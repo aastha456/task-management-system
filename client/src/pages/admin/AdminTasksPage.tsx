@@ -131,6 +131,11 @@ const AdminTasksPage = () => {
         }
         }
     };
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+        setForm({ ...form, file: e.target.files[0] });
+    }
+    };
 
     if (loading) return (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
@@ -139,75 +144,107 @@ const AdminTasksPage = () => {
     );
 
     return (
-        <Box>
-            <Box sx={{
-                display: "flex", justifyContent: "space-between",
-                alignItems: "center", mb: 3
-            }}>
-                <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>All Tasks</Typography>
-                    <Typography sx={{ fontSize: 13, color: "text.secondary", mt: 0.5 }}>
-                        {tasks.length} tasks total
-                    </Typography>
-                </Box>
-                <Button variant="contained" startIcon={<AddIcon />}
-                    onClick={() => handleOpen()}
-                    sx={{
-                        bgcolor: COLORS.primary,
-                        "&:hover": { bgcolor: COLORS.primaryDark }, fontSize: 13
-                    }}>
-                    New Task
-                </Button>
+    <Box>
+        {/* HEADER */}
+        <Box sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3
+        }}>
+            <Box>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    All Tasks
+                </Typography>
+                <Typography sx={{ fontSize: 13, color: "text.secondary", mt: 0.5 }}>
+                    {tasks.length} tasks total
+                </Typography>
             </Box>
 
-            <Paper elevation={0} sx={{
-                border: "1px solid #e5e7eb", borderRadius: 3, overflow: "hidden"
-            }}>
-                <Box sx={{
-                    px: 3, py: 1.5,
-                    display: "grid",
-                    gridTemplateColumns: "1fr 140px 110px 110px 80px",
-                    gap: 2, bgcolor: "#f9fafb",
-                    borderBottom: "1px solid #e5e7eb"
-                }}>
-                    {["Title", "Assigned To", "Priority", "Status", ""].map((h) => (
-                        <Typography key={h} sx={{
-                            fontSize: 11, fontWeight: 500,
-                            color: "text.secondary",
-                            textTransform: "uppercase", letterSpacing: 0.5
-                        }}>
-                            {h}
-                        </Typography>
-                    ))}
-                </Box>
+            <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => handleOpen()}
+                sx={{
+                    bgcolor: COLORS.primary,
+                    "&:hover": { bgcolor: COLORS.primaryDark },
+                    fontSize: 13
+                }}
+            >
+                New Task
+            </Button>
+        </Box>
 
-                {tasks.length === 0 ? (
-                    <Box sx={{ p: 4, textAlign: "center" }}>
-                        <Typography sx={{ color: "text.secondary", fontSize: 13 }}>
-                            No tasks yet — create one!
-                        </Typography>
-                    </Box>
-                ) : (
-                    tasks.filter((task): task is Task => task !== null)
+        {/* TABLE */}
+        <Paper elevation={0} sx={{
+            border: "1px solid #e5e7eb",
+            borderRadius: 3,
+            overflow: "hidden"
+        }}>
+
+            {/* HEADER ROW */}
+            <Box sx={{
+                px: 3,
+                py: 1.5,
+                display: "grid",
+                gridTemplateColumns: "1fr 140px 110px 110px 110px 80px",
+                gap: 2,
+                bgcolor: "#f9fafb",
+                borderBottom: "1px solid #e5e7eb"
+            }}>
+                {["Title", "Assigned To", "Priority", "Status", "Attachment", ""].map((h) => (
+                    <Typography
+                        key={h}
+                        sx={{
+                            fontSize: 11,
+                            fontWeight: 500,
+                            color: "text.secondary",
+                            textTransform: "uppercase",
+                            letterSpacing: 0.5
+                        }}
+                    >
+                        {h}
+                    </Typography>
+                ))}
+            </Box>
+
+            {/* EMPTY STATE */}
+            {tasks.length === 0 ? (
+                <Box sx={{ p: 4, textAlign: "center" }}>
+                    <Typography sx={{ color: "text.secondary", fontSize: 13 }}>
+                        No tasks yet — create one!
+                    </Typography>
+                </Box>
+            ) : (
+                tasks
+                    .filter((task): task is Task => task !== null)
                     .map((task) => (
-                        <Box key={task._id} sx={{
-                            px: 3, py: 2,
-                            display: "grid",
-                            gridTemplateColumns: "1fr 140px 110px 110px 80px",
-                            gap: 2, alignItems: "center",
-                            borderBottom: "1px solid #f3f4f6",
-                            "&:last-child": { borderBottom: "none" },
-                            "&:hover": { bgcolor: "#f9fafb" }
-                        }}>
+                        <Box
+                            key={task._id}
+                            sx={{
+                                px: 3,
+                                py: 2,
+                                display: "grid",
+                                gridTemplateColumns: "1fr 140px 110px 110px 110px 80px",
+                                gap: 2,
+                                alignItems: "center",
+                                borderBottom: "1px solid #f3f4f6",
+                                "&:hover": { bgcolor: "#f9fafb" }
+                            }}
+                        >
+
+                            {/* TITLE */}
                             <Box>
                                 <Typography sx={{ fontSize: 13, fontWeight: 500 }}>
                                     {task.title}
                                 </Typography>
+
                                 {task.description && (
                                     <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
                                         {task.description}
                                     </Typography>
                                 )}
+
                                 {task.dueDate && (
                                     <Typography sx={{ fontSize: 11, color: "text.secondary" }}>
                                         Due: {new Date(task.dueDate).toLocaleDateString()}
@@ -215,151 +252,342 @@ const AdminTasksPage = () => {
                                 )}
                             </Box>
 
+                            {/* ASSIGNED */}
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                 {task.assignedTo && typeof task.assignedTo === "object" ? (
                                     <>
                                         <Avatar sx={{
-                                            width: 22, height: 22,
+                                            width: 22,
+                                            height: 22,
                                             bgcolor: COLORS.primaryLight,
-                                            color: COLORS.primary, fontSize: 10
+                                            color: COLORS.primary,
+                                            fontSize: 10
                                         }}>
-                                             {task.assignedTo?.name ? task.assignedTo.name[0].toUpperCase() : "?"}
+                                            {task.assignedTo?.name?.[0]?.toUpperCase() || "?"}
                                         </Avatar>
                                         <Typography sx={{ fontSize: 12 }}>
-                                            {task.assignedTo?.name || "Unknown User"}
+                                            {task.assignedTo.name}
                                         </Typography>
                                     </>
-                                ) : task.assignedTo ? (
-                                        /* Yedi assignedTo string matra ho bhane ID matra dekhaucha or Loading state */
-                                        <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
-                                            User Assigned (ID: {String(task.assignedTo).substring(0, 5)}...)
-                                        </Typography>
-                                    ) : (
+                                ) : (
                                     <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
                                         Unassigned
                                     </Typography>
                                 )}
                             </Box>
 
-                            <Chip label={task.priority} size="small" sx={{
-                                fontSize: 11, height: 22, width: "fit-content",
-                                bgcolor: `${priorityColor[task.priority]}15`,
-                                color: priorityColor[task.priority], fontWeight: 500
-                            }} />
+                            {/* PRIORITY */}
+                            <Chip
+                                label={task.priority}
+                                size="small"
+                                sx={{
+                                    fontSize: 11,
+                                    height: 22,
+                                    bgcolor: `${priorityColor[task.priority]}15`,
+                                    color: priorityColor[task.priority],
+                                    fontWeight: 500
+                                }}
+                            />
 
-                            <Chip label={task.status} size="small" sx={{
-                                fontSize: 11, height: 22, width: "fit-content",
-                                bgcolor: `${statusColor[task.status]}15`,
-                                color: statusColor[task.status], fontWeight: 500
-                            }} />
+                            {/* STATUS */}
+                            <Chip
+                                label={task.status}
+                                size="small"
+                                sx={{
+                                    fontSize: 11,
+                                    height: 22,
+                                    bgcolor: `${statusColor[task.status]}15`,
+                                    color: statusColor[task.status],
+                                    fontWeight: 500
+                                }}
+                            />
 
+                            {/* ATTACHMENT (CLEAN LIST VIEW) */}
+                            <Box>
+                                {task.attachment ? (
+                                    <Typography
+                                        component="a"
+                                        href={task.attachment}
+                                        target="_blank"
+                                        sx={{
+                                            fontSize: 12,
+                                            color: COLORS.primary,
+                                            textDecoration: "none",
+                                            "&:hover": { textDecoration: "underline" }
+                                        }}
+                                    >
+                                        📎 View File
+                                    </Typography>
+                                ) : (
+                                    <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
+                                        —
+                                    </Typography>
+                                )}
+                            </Box>
+
+                            {/* ACTIONS */}
                             <Box sx={{ display: "flex", gap: 0.5 }}>
-                                <IconButton size="small" onClick={() => handleOpen(task)}
-                                    sx={{ color: "#6b7280", "&:hover": { color: COLORS.primary } }}>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => handleOpen(task)}
+                                    sx={{ color: "#6b7280" }}
+                                >
                                     <EditIcon fontSize="small" />
                                 </IconButton>
-                                <IconButton size="small" onClick={() => handleDelete(task._id)}
-                                    sx={{ color: "#6b7280", "&:hover": { color: "#dc2626" } }}>
+
+                                <IconButton
+                                    size="small"
+                                    onClick={() => handleDelete(task._id)}
+                                    sx={{ color: "#6b7280" }}
+                                >
                                     <DeleteIcon fontSize="small" />
                                 </IconButton>
                             </Box>
+
                         </Box>
                     ))
-                )}
-            </Paper>
+            )}
+        </Paper>
 
-            <Dialog open={open} onClose={() => { setOpen(false); setEditTask(null); }}
-                maxWidth="sm" fullWidth>
-                <DialogTitle sx={{ fontWeight: 500, fontSize: 16 }}>
-                    {editTask ? "Edit Task" : "New Task"}
-                </DialogTitle>
-                <DialogContent sx={{
-                    display: "flex", flexDirection: "column",
-                    gap: 2, pt: "16px !important"
-                }}>
-                    <TextField label="Title *" fullWidth size="small"
-                        value={form.title}
-                        onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        {/* DIALOG */}
+        <Dialog
+            open={open}
+            onClose={() => { setOpen(false); setEditTask(null); }}
+            maxWidth="sm"
+            fullWidth
+        >
+            <DialogTitle sx={{ fontWeight: 500, fontSize: 16 }}>
+                {editTask ? "Edit Task" : "New Task"}
+            </DialogTitle>
 
-                    <TextField label="Description" fullWidth size="small"
-                        multiline rows={2} value={form.description}
-                        onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <DialogContent sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                pt: "16px !important"
+            }}>
 
+                <TextField
+                    label="Title *"
+                    fullWidth
+                    size="small"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                />
+
+                <TextField
+                    label="Description"
+                    fullWidth
+                    size="small"
+                    multiline
+                    rows={2}
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+
+                {/* WORKSPACE */}
+                <FormControl size="small" fullWidth>
+                    <InputLabel>Workspace *</InputLabel>
+                    <Select
+                        value={form.workspaceId}
+                        label="Workspace *"
+                        onChange={(e) => handleWorkspaceChange(e.target.value)}
+                    >
+                        {workspaces.map((ws) => (
+                            <MenuItem key={ws._id} value={ws._id}>
+                                {ws.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                {/* PROJECT */}
+                {projects.length > 0 && (
                     <FormControl size="small" fullWidth>
-                        <InputLabel>Workspace *</InputLabel>
-                        <Select value={form.workspaceId} label="Workspace *"
-                            onChange={(e) => handleWorkspaceChange(e.target.value)}>
-                            {workspaces.map((ws) => (
-                                <MenuItem key={ws._id} value={ws._id}>{ws.name}</MenuItem>
+                        <InputLabel>Project</InputLabel>
+                        <Select
+                            value={form.projectId || ""}
+                            label="Project"
+                            onChange={(e) =>
+                                setForm({ ...form, projectId: e.target.value })
+                            }
+                        >
+                            <MenuItem value="">
+                                <em>No project</em>
+                            </MenuItem>
+                            {projects.map((p) => (
+                                <MenuItem key={p._id} value={p._id}>
+                                    {p.name}
+                                </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
+                )}
 
-                    {projects.length > 0 && (
-                        <FormControl size="small" fullWidth>
-                            <InputLabel>Project</InputLabel>
-                            <Select value={form.projectId || ""} label="Project"
-                                onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
-                                <MenuItem value=""><em>No project</em></MenuItem>
-                                {projects.map((p) => (
-                                    <MenuItem key={p._id} value={p._id}>{p.name}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    )}
-
-                    {members.length > 0 && (
-                        <FormControl size="small" fullWidth>
-                            <InputLabel>Assign To</InputLabel>
-                            <Select value={form.assignedTo || ""} label="Assign To"
-                                onChange={(e) => setForm({ ...form, assignedTo: e.target.value })}>
-                                <MenuItem value=""><em>Unassigned</em></MenuItem>
-                                {members.map((m) => (
-                                    <MenuItem key={m.user._id} value={m.user._id}>
-                                        {m.user.name} — {m.user.email}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    )}
-
+                {/* ASSIGN */}
+                {members.length > 0 && (
                     <FormControl size="small" fullWidth>
-                        <InputLabel>Priority</InputLabel>
-                        <Select value={form.priority} label="Priority"
-                            onChange={(e) => setForm({ ...form, priority: e.target.value as Task["priority"] })}>
-                            <MenuItem value="low">Low</MenuItem>
-                            <MenuItem value="medium">Medium</MenuItem>
-                            <MenuItem value="high">High</MenuItem>
+                        <InputLabel>Assign To</InputLabel>
+                        <Select
+                            value={form.assignedTo || ""}
+                            label="Assign To"
+                            onChange={(e) =>
+                                setForm({ ...form, assignedTo: e.target.value })
+                            }
+                        >
+                            <MenuItem value="">
+                                <em>Unassigned</em>
+                            </MenuItem>
+                            {members.map((m) => (
+                                <MenuItem key={m.user._id} value={m.user._id}>
+                                    {m.user.name} — {m.user.email}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
+                )}
 
-                    <FormControl size="small" fullWidth>
-                        <InputLabel>Status</InputLabel>
-                        <Select value={form.status} label="Status"
-                            onChange={(e) => setForm({ ...form, status: e.target.value as Task["status"] })}>
-                            <MenuItem value="todo">Todo</MenuItem>
-                            <MenuItem value="in-progress">In Progress</MenuItem>
-                            <MenuItem value="done">Done</MenuItem>
-                        </Select>
-                    </FormControl>
+                {/* PRIORITY */}
+                <FormControl size="small" fullWidth>
+                    <InputLabel>Priority</InputLabel>
+                    <Select
+                        value={form.priority}
+                        label="Priority"
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                priority: e.target.value as Task["priority"]
+                            })
+                        }
+                    >
+                        <MenuItem value="low">Low</MenuItem>
+                        <MenuItem value="medium">Medium</MenuItem>
+                        <MenuItem value="high">High</MenuItem>
+                    </Select>
+                </FormControl>
 
-                    <TextField label="Due Date" type="date" fullWidth size="small"
-                        value={form.dueDate}
-                        onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                        slotProps={{ inputLabel: { shrink: true } }} />
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2 }}>
-                    <Button onClick={() => { setOpen(false); setEditTask(null); }}
-                        sx={{ color: "#6b7280" }}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSubmit}
-                        disabled={!form.title || !form.workspaceId}
-                        sx={{ bgcolor: COLORS.primary, "&:hover": { bgcolor: COLORS.primaryDark } }}>
-                        {editTask ? "Update" : "Create"}
+                {/* STATUS */}
+                <FormControl size="small" fullWidth>
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                        value={form.status}
+                        label="Status"
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                status: e.target.value as Task["status"]
+                            })
+                        }
+                    >
+                        <MenuItem value="todo">Todo</MenuItem>
+                        <MenuItem value="in-progress">In Progress</MenuItem>
+                        <MenuItem value="done">Done</MenuItem>
+                    </Select>
+                </FormControl>
+
+                {/* DATE */}
+                <TextField
+                    label="Due Date"
+                    type="date"
+                    fullWidth
+                    size="small"
+                    value={form.dueDate}
+                    onChange={(e) =>
+                        setForm({ ...form, dueDate: e.target.value })
+                    }
+                    slotProps={{ inputLabel: { shrink: true } }}
+                />
+
+                {/* UPLOAD */}
+                <Box sx={{
+                    mt: 1,
+                    p: 2,
+                    border: "1px dashed #d1d5db",
+                    borderRadius: 2,
+                    backgroundColor: "#fafafa"
+                }}>
+                    <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
+                        Attachment (Max 5MB)
+                    </Typography>
+
+                    <Button
+                        variant="outlined"
+                        component="label"
+                        fullWidth
+                        size="small"
+                        sx={{ borderStyle: "dashed" }}
+                    >
+                        {form.file ? form.file.name : "Upload File"}
+                        <input
+                            type="file"
+                            hidden
+                            onChange={handleFileChange}
+                            accept="image/*,application/pdf"
+                        />
                     </Button>
-                </DialogActions>
-            </Dialog>
-        </Box>
-    );
+                </Box>
+
+                {/* EDIT PREVIEW */}
+                {editTask?.attachment && (
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="caption">Current File:</Typography>
+
+                        {editTask.attachment.match(/\.(jpg|jpeg|png|webp)$/) ? (
+                            <Box
+                                component="img"
+                                src={editTask.attachment}
+                                sx={{
+                                    width: 500,
+                                    height: 500,
+                                    objectFit: "contain",
+                                    borderRadius: 1,
+                                    mt: 0.5
+                                }}
+                            />
+                        ) : (
+                            <Typography
+                                component="a"
+                                href={editTask.attachment}
+                                target="_blank"
+                                sx={{
+                                    display: "block",
+                                    color: COLORS.primary,
+                                    fontSize: 12,
+                                    mt: 0.5
+                                }}
+                            >
+                                📎 View File
+                            </Typography>
+                        )}
+                    </Box>
+                )}
+
+            </DialogContent>
+
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+                <Button
+                    onClick={() => { setOpen(false); setEditTask(null); }}
+                    sx={{ color: "#6b7280" }}
+                >
+                    Cancel
+                </Button>
+
+                <Button
+                    variant="contained"
+                    onClick={handleSubmit}
+                    disabled={!form.title || !form.workspaceId}
+                    sx={{
+                        bgcolor: COLORS.primary,
+                        "&:hover": { bgcolor: COLORS.primaryDark }
+                    }}
+                >
+                    {editTask ? "Update" : "Create"}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    </Box>
+);
+
 };
 
 export default AdminTasksPage;

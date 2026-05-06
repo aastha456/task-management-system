@@ -104,6 +104,12 @@ const UserTaskPage = () => {
     }
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+        setForm({ ...form, file: e.target.files[0] });
+    }
+};
+
     const handleStatusChange = async (
     taskId: string,
     status: "todo" | "in-progress" | "done"
@@ -299,6 +305,33 @@ const UserTaskPage = () => {
                         value={form.dueDate}
                         onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
                         slotProps={{ inputLabel: { shrink: true } }} />
+                     <Box sx={{
+                                        mt: 1,
+                                        p: 2,
+                                        border: "1px dashed #d1d5db",
+                                        borderRadius: 2,
+                                        backgroundColor: "#fafafa"
+                                    }}>
+                                        <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
+                                            Attachment (Max 5MB)
+                                        </Typography>
+                    
+                                        <Button
+                                            variant="outlined"
+                                            component="label"
+                                            fullWidth
+                                            size="small"
+                                            sx={{ borderStyle: "dashed" }}
+                                        >
+                                            {form.file ? form.file.name : "Upload File"}
+                                            <input
+                                                type="file"
+                                                hidden
+                                                onChange={handleFileChange}
+                                                accept="image/*,application/pdf"
+                                            />
+                                        </Button>
+                                    </Box>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>
                     <Button onClick={() => { setOpen(false); setEditTask(null); }}

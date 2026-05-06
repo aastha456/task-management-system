@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { Task } from "../../interfaces/task";
+import type { Task, TaskForm } from "../../interfaces/task";
 import {
     getTasksApi,
     createTaskApi,
@@ -33,7 +33,7 @@ export const fetchTasks = createAsyncThunk(
 
 export const createTask = createAsyncThunk(
     "tasks/create",
-    async (data: Partial<Task>, { rejectWithValue }) => {
+    async (data: TaskForm, { rejectWithValue }) => {
         try {
             const res = await createTaskApi(data);
             return res.data.data;
@@ -45,7 +45,7 @@ export const createTask = createAsyncThunk(
 
 export const updateTask = createAsyncThunk(
     "tasks/update",
-    async ({ id, data }: { id: string; data: Partial<Task> }, { rejectWithValue }) => {
+    async ({ id, data }: { id: string; data: Partial<TaskForm> }, { rejectWithValue }) => {
         try {
             const res = await updateTaskApi(id, data);
             return res.data.data;

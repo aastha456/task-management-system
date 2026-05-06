@@ -12,11 +12,12 @@ export interface Task {
     priority: "low" | "medium" | "high";
     dueDate?: string;
 
-   assignedTo?: UserLite | string;
-   createdBy?: UserLite | string;
+    assignedTo?: UserLite | string;
+    createdBy?: UserLite | string;
 
     projectId?: string;
     workspaceId: string;
+    attachment?: string;
 }
 
 export interface TaskForm {
@@ -28,4 +29,5 @@ export interface TaskForm {
     workspaceId: string;
     projectId?: string;
     assignedTo?: string;
+    file?: File;
 }
